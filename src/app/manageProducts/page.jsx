@@ -22,7 +22,7 @@ export default function ManageProducts() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get("https://ridezon-backend.onrender.com/products");
+      const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/products`);
       setProducts(data);
     } catch (err) {
       console.error(err);
@@ -63,7 +63,7 @@ export default function ManageProducts() {
 
   const updateProduct = async (id) => {
     try {
-      await axios.put(`https://ridezon-backend.onrender.com/${id}`, editData);
+      await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/${id}`, editData);
       setMessage("Product updated successfully!");
       setEditingId(null);
       fetchProducts();
@@ -76,7 +76,7 @@ export default function ManageProducts() {
   const deleteProduct = async (id) => {
     if (!confirm("Are you sure you want to delete this product?")) return;
     try {
-      await axios.delete(`https://ridezon-backend.onrender.com/${id}`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/${id}`);
       setMessage("Product deleted successfully!");
       fetchProducts();
     } catch (err) {
