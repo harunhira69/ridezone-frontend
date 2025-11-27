@@ -4,8 +4,10 @@ import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { MongoClient } from "mongodb";
 
+// ------------------
 
- 
+// ------------------
+
 const uri = process.env.MONGODB_URI;
 
 if (!uri) {
@@ -26,12 +28,13 @@ async function getUsersCollection() {
 
 export const authOptions = {
   providers: [
-
+    // GOOGLE LOGIN
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
 
+    // EMAIL + PASSWORD LOGIN
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -47,7 +50,7 @@ export const authOptions = {
 
         const user = await users.findOne({ email });
 
-        if (!user) return null;
+        if (!user) return null; 
         if (!user.password) return null; 
 
         const isCorrect = await bcrypt.compare(
@@ -76,33 +79,40 @@ export const authOptions = {
   },
 
   callbacks: {
-
+    // ------------
+    // SIGN-IN LOGIC
+    // ------------
     async signIn({ user, account }) {
       try {
         const users = await getUsersCollection();
 
         if (account.provider === "google") {
           const email = user.email.toLowerCase();
-          const exists = await users.findOne({ email });
 
-          if (!exists) {
+          const existingUser = await users.findOne({ email });
+
+          // Create user if not exists
+          if (!existingUser) {
             await users.insertOne({
               name: user.name,
-              email: email,
-              image: user.image,
+              email,
+              image: user.image || null,
               password: null,
               createdAt: new Date(),
             });
           }
         }
-        return true;
+
+        return true; 
       } catch (err) {
-        console.error("Sign-in error:", err);
-        return false;
+        console.error("Google Sign-In Error:", err);
+        return true; 
       }
     },
 
- 
+    // ------------
+    // JWT TOKEN
+    // ------------
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
@@ -113,7 +123,9 @@ export const authOptions = {
       return token;
     },
 
-   
+    // ------------
+
+    // ------------
     async session({ session, token }) {
       session.user.id = token.id;
       session.user.name = token.name;
@@ -125,6 +137,7 @@ export const authOptions = {
 
   secret: process.env.NEXTAUTH_SECRET,
 };
+
 
 
 const handler = NextAuth(authOptions);
