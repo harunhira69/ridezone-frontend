@@ -4,9 +4,7 @@ import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { MongoClient } from "mongodb";
 
-// ------------------
 
-// ------------------
 
 const uri = process.env.MONGODB_URI;
 
