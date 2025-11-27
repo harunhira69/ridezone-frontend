@@ -2,33 +2,42 @@
 
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { signIn, useSession } from "next-auth/react";
+import { signIn, useSession, getSession } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
 import { useLoader } from "@/component/loaderProvider";
 
 export default function RegisterPage() {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [image, setImage] = useState(""); // ⭐ NEW FIELD
+  const [image, setImage] = useState("");
   const [password, setPassword] = useState("");
-
   const [loading, setLoading] = useState(false);
   const { showLoader, hideLoader } = useLoader();
 
   useEffect(() => {
+    // Client-only: useSearchParams inside effect
+    const searchParams = new URLSearchParams(window.location.search);
+
+    const refreshSession = async () => {
+      const freshSession = await getSession();
+      if (freshSession) await update();
+    };
+
     if (session) {
+      refreshSession();
+
       if (searchParams.get("google") === "success") {
         toast.success("Logged in with Google successfully!");
       }
+
       router.replace("/", { scroll: false });
     }
-  }, [session, router, searchParams]);
+  }, [session, router, update]);
 
   const handleGoogleSignIn = async () => {
     showLoader();
@@ -56,13 +65,16 @@ export default function RegisterPage() {
     try {
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/register`,
-        { name, email, password, image }, // ⭐ image added
+        { name, email, password, image },
         { headers: { "Content-Type": "application/json" } }
       );
 
       toast.success(res.data.message || "Registration successful!");
-      router.push("/login");
 
+      // Auto-login
+      await signIn("credentials", { redirect: false, email, password });
+      await update();
+      router.replace("/");
     } catch (error) {
       if (error.response) {
         toast.error(error.response.data.message || "Registration failed!");
@@ -108,7 +120,6 @@ export default function RegisterPage() {
             />
           </div>
 
-          {/* ⭐ NEW IMAGE URL FIELD */}
           <div>
             <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
               Profile Image URL (optional)

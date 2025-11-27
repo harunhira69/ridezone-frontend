@@ -53,14 +53,14 @@ export default function Navbar() {
             {session && (
               <>
                 <Link
-                  href="/add-products"
+                  href="/addProducts"
                   className="text-gray-800 dark:text-gray-300 font-medium hover:text-purple-600 dark:hover:text-purple-400 transition"
                 >
                   Add Product
                 </Link>
 
                 <Link
-                  href="/manage-products"
+                  href="/manageProducts"
                   className="text-gray-800 dark:text-gray-300 font-medium hover:text-purple-600 dark:hover:text-purple-400 transition"
                 >
                   Manage Products
