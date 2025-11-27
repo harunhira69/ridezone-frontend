@@ -39,16 +39,23 @@ export default function RegisterPage() {
     }
   }, [session, router, update]);
 
-  const handleGoogleSignIn = async () => {
-    showLoader();
-    try {
-      await signIn("google", { callbackUrl: "/?google=success" });
-    } catch (error) {
+const handleGoogleSignIn = async () => {
+  showLoader();
+  try {
+    const result = await signIn("google", { redirect: false }); // prevent automatic redirect
+
+    if (result?.ok) {
+      toast.success("Logged in with Google successfully!");
+      router.replace("/"); // redirect to homepage
+    } else {
       toast.error("Google sign-in failed.");
-    } finally {
-      hideLoader();
     }
-  };
+  } catch (error) {
+    toast.error("Google sign-in failed.");
+  } finally {
+    hideLoader();
+  }
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -62,19 +69,33 @@ export default function RegisterPage() {
       return;
     }
 
+
+    const normalizedEmail = email.toLowerCase();
+
     try {
+      // 1. Register the user with the normalized email
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/register`,
-        { name, email, password, image },
+        // Send the normalized email to the server
+        { name, email: normalizedEmail, password, image },
         { headers: { "Content-Type": "application/json" } }
       );
 
       toast.success(res.data.message || "Registration successful!");
 
-      // Auto-login
-      await signIn("credentials", { redirect: false, email, password });
-      await update();
-      router.replace("/");
+      // 2. Auto-login using the normalized email
+      const result = await signIn("credentials", {
+        redirect: false,
+        email: normalizedEmail, // Use normalized email for sign-in
+        password
+      });
+
+      if (result?.error) {
+        toast.error("Auto-login failed after registration. (Check server logs)");
+      } else {
+        await update();
+        router.replace("/");
+      }
     } catch (error) {
       if (error.response) {
         toast.error(error.response.data.message || "Registration failed!");

@@ -3,14 +3,19 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { signIn } from "next-auth/react";
+import { FcGoogle } from "react-icons/fc";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
+  // Email/Password login
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
@@ -23,6 +28,7 @@ export default function LoginPage() {
 
       if (!res.ok) {
         toast.error(data.message || "Invalid Credentials");
+        setLoading(false);
         return;
       }
 
@@ -33,8 +39,14 @@ export default function LoginPage() {
       }, 800);
     } catch (err) {
       toast.error("Server error");
+    } finally {
+      setLoading(false);
     }
   };
+
+  // Google Login
+
+
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-100 dark:bg-gray-900 px-4">
@@ -45,10 +57,12 @@ export default function LoginPage() {
           Welcome Back 👋
         </h2>
 
-        {/* Form */}
-        <form onSubmit={handleLogin} className="space-y-5">
+     
 
-          {/* Email */}
+        <div className="text-center text-gray-500 dark:text-gray-400 mb-5">or</div>
+
+        {/* Email/Password Form */}
+        <form onSubmit={handleLogin} className="space-y-5">
           <div>
             <label className="block mb-1 text-gray-700 dark:text-gray-300 font-medium">
               Email Address
@@ -62,7 +76,6 @@ export default function LoginPage() {
             />
           </div>
 
-          {/* Password */}
           <div>
             <label className="block mb-1 text-gray-700 dark:text-gray-300 font-medium">
               Password
@@ -76,12 +89,12 @@ export default function LoginPage() {
             />
           </div>
 
-          {/* Login Button */}
           <button
             type="submit"
+            disabled={loading}
             className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all shadow-md hover:shadow-lg"
           >
-            Login
+            {loading ? "Processing..." : "Login"}
           </button>
         </form>
 

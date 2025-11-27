@@ -53,10 +53,13 @@ export default function ProductsPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">
-      <h2 className="text-4xl font-bold text-center mt-10">All Products</h2>
-      <p className="text-center text-gray-600 mt-2 mb-8">
-        Browse our exclusive collection and find the perfect product for you.
-      </p>
+    <h2 className="text-4xl font-bold text-center mt-10 bg-linear-to-r from-purple-600 via-pink-500 to-indigo-500 bg-clip-text text-transparent">
+  All Products
+</h2>
+<p className="text-center text-gray-600 mt-2 mb-8">
+  Browse our exclusive collection and find the perfect product for you.
+</p>
+
 
       {/* Filters */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-10">

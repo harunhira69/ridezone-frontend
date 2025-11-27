@@ -9,8 +9,13 @@ let users;
 
 async function connectDB() {
   if (!users) {
-    await client.connect();
-    users = client.db("ridezone").collection("users");
+    try {
+      await client.connect();
+      users = client.db("ridezone").collection("users");
+      console.log("MongoDB connected");
+    } catch (err) {
+      console.error("MongoDB connection error:", err);
+    }
   }
 }
 
@@ -20,53 +25,65 @@ export const authOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
-
     CredentialsProvider({
-      name: "Login",
+      name: "Credentials",
       credentials: {
-        email: {},
-        password: {},
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
       },
-
       async authorize(credentials) {
         await connectDB();
+        const normalizedEmail = credentials.email.toLowerCase();
+        const user = await users.findOne({ email: normalizedEmail });
 
-        const user = await users.findOne({ email: credentials.email });
-        if (!user) throw new Error("No user found");
+        if (!user) return null; // user not found
+        if (!user.password) return null; // Google user can't login with credentials
 
-        const match = await bcrypt.compare(
-          credentials.password,
-          user.password
-        );
-
-        if (!match) throw new Error("Invalid password");
+        const isValid = await bcrypt.compare(credentials.password, user.password);
+        if (!isValid) return null;
 
         return {
           id: user._id.toString(),
           name: user.name,
           email: user.email,
-          image: user.image || null,   // ⭐ IMPORTANT
+          image: user.image || null,
         };
       },
     }),
   ],
 
-  session: {
-    strategy: "jwt",
-  },
-
   pages: {
     signIn: "/login",
   },
 
+  session: {
+    strategy: "jwt",
+  },
+
   callbacks: {
+    async signIn({ user, account, profile }) {
+      await connectDB();
+      if (account.provider === "google") {
+        const existingUser = await users.findOne({ email: user.email });
+        if (!existingUser) {
+          await users.insertOne({
+            name: user.name,
+            email: user.email,
+            image: user.image,
+            password: null,
+            createdAt: new Date(),
+          });
+        }
+      }
+      return true;
+    },
+
     async jwt({ token, user, account, profile }) {
-      // First time login
       if (user) {
         token.id = user.id;
         token.name = user.name;
         token.email = user.email;
-        token.image = user.image ?? profile?.picture ?? null; 
+        token.image = user.image || profile?.picture || null;
       }
       return token;
     },
@@ -75,7 +92,7 @@ export const authOptions = {
       session.user.id = token.id;
       session.user.name = token.name;
       session.user.email = token.email;
-      session.user.image = token.image;  
+      session.user.image = token.image;
       return session;
     },
   },

@@ -49,7 +49,7 @@ export default function Navbar() {
               </Link>
             ))}
 
-            {/* Only when user is logged in */}
+            {/* Admin/Logged-in Links */}
             {session && (
               <>
                 <Link
@@ -68,7 +68,7 @@ export default function Navbar() {
               </>
             )}
 
-            {/* Auth Section */}
+            {/* Auth / User Avatar */}
             {session ? (
               <div className="relative">
                 <button
@@ -89,7 +89,7 @@ export default function Navbar() {
 
                 {/* Dropdown */}
                 {dropdownOpen && (
-                  <div className="absolute right-0 mt-3 w-60 bg-white dark:bg-gray-900 shadow-xl rounded-lg border border-gray-200 dark:border-gray-700 p-3">
+                  <div className="absolute right-0 mt-3 w-60 bg-white dark:bg-gray-900 shadow-xl rounded-lg border border-gray-200 dark:border-gray-700 p-3 z-50">
                     <div className="px-3 py-2 border-b border-gray-300 dark:border-gray-700">
                       <p className="font-semibold text-gray-900 dark:text-gray-100">
                         {session.user.name}
@@ -104,7 +104,7 @@ export default function Navbar() {
                         onClick={() => signOut({ callbackUrl: "/login" })}
                         className="flex items-center w-full text-left px-4 py-2 text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 rounded font-semibold"
                       >
-                        <FiLogOut /> Logout
+                        <FiLogOut className="mr-2" /> Logout
                       </button>
                     </div>
                   </div>
@@ -188,12 +188,21 @@ export default function Navbar() {
               </Link>
             </>
           ) : (
-            <button
-              onClick={() => signOut({ callbackUrl: "/login" })}
-              className="w-full mt-2 bg-red-600 text-white py-2 rounded-lg"
-            >
-              Logout
-            </button>
+            <div className="flex items-center gap-2 mt-2">
+              <Image
+                src={session.user.image || "/default-user.png"}
+                alt="User Avatar"
+                width={36}
+                height={36}
+                className="rounded-full"
+              />
+              <button
+                onClick={() => signOut({ callbackUrl: "/login" })}
+                className="flex-1 bg-red-600 text-white py-2 rounded-lg font-semibold"
+              >
+                Logout
+              </button>
+            </div>
           )}
         </div>
       )}
