@@ -1,90 +1,81 @@
 import NextAuth from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import bcrypt from "bcryptjs";
+import { MongoClient } from "mongodb";
+
+const client = new MongoClient(process.env.MONGODB_URI);
+let users;
+
+async function connectDB() {
+  if (!users) {
+    await client.connect();
+    users = client.db("ridezone").collection("users");
+  }
+}
 
 export const authOptions = {
   providers: [
-    CredentialsProvider({
-      name: "Credentials",
-      credentials: {
-        email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        // Replace with your backend login logic
-        const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-
-        const res = await fetch(`${backendUrl}/auth/login`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: credentials.email,
-            password: credentials.password,
-          }),
-        });
-
-        const user = await res.json();
-
-        if (res.ok && user) {
-          return user; // must return user object
-        } else {
-          return null; // login failed
-        }
-      },
-    }),
-
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
+
+    CredentialsProvider({
+      name: "Login",
+      credentials: {
+        email: {},
+        password: {},
+      },
+
+      async authorize(credentials) {
+        await connectDB();
+
+        const user = await users.findOne({ email: credentials.email });
+        if (!user) throw new Error("No user found");
+
+        const match = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
+
+        if (!match) throw new Error("Invalid password");
+
+        return {
+          id: user._id.toString(),
+          name: user.name,
+          email: user.email,
+          image: user.image || null,   // ⭐ IMPORTANT
+        };
+      },
+    }),
   ],
+
+  session: {
+    strategy: "jwt",
+  },
 
   pages: {
     signIn: "/login",
   },
 
   callbacks: {
-    async signIn({ user, account, profile }) {
-      if (account.provider === "google") {
-        // Google OAuth: save user to your DB
-        try {
-          const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-          const response = await fetch(`${backendUrl}/auth/google-signin`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              name: user.name || profile?.name,
-              email: user.email,
-              image: user.image || profile?.picture,
-              googleId: profile?.sub,
-            }),
-          });
-
-          if (!response.ok) {
-            console.error("Failed to save user to database");
-            return false;
-          }
-
-          return true;
-        } catch (error) {
-          console.error("Error in signIn callback:", error);
-          return false;
-        }
-      }
-
-      return true; // allow credentials login
-    },
-
-    async jwt({ token, user }) {
+    async jwt({ token, user, account, profile }) {
+      // First time login
       if (user) {
         token.id = user.id;
+        token.name = user.name;
         token.email = user.email;
+        token.image = user.image ?? profile?.picture ?? null; 
       }
       return token;
     },
 
     async session({ session, token }) {
       session.user.id = token.id;
+      session.user.name = token.name;
+      session.user.email = token.email;
+      session.user.image = token.image;  
       return session;
     },
   },

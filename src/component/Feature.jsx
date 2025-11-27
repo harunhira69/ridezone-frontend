@@ -38,9 +38,10 @@ export default function Feature() {
           className="text-3xl md:text-4xl font-extrabold text-center mb-4 tracking-tight text-gray-900 dark:text-white"
         >
           Why Choose{" "}
-          <span className="bg-gradient-to-r from-purple-600 via-pink-500 to-indigo-500 bg-clip-text text-transparent">
-            RideZone?
-          </span>
+        <span className="bg-linear-to-r from-purple-600 via-pink-500 to-indigo-500 bg-clip-text text-transparent">
+  RideZone?
+</span>
+
         </motion.h2>
 
         <motion.p

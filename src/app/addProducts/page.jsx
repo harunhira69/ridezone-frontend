@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
-import { useLoader } from "@/component/LoaderProvider";
+import { useLoader } from "@/component/loaderProvider";
+
 
 export default function AddProduct() {
   const { data: session } = useSession();
@@ -16,7 +17,7 @@ export default function AddProduct() {
     price: "",
     image: "",
     shortDescription: "",
-    category: "", // 🔥 added
+    category: "", 
   });
 
   const [message, setMessage] = useState("");
@@ -62,7 +63,7 @@ export default function AddProduct() {
   };
 
   return (
-    <div className="py-10 px-4 max-w-xl mx-auto">
+    <div className="py-10 px-4 mt-10 max-w-xl mx-auto">
       <form onSubmit={handleSubmit} className="space-y-4 p-6 rounded-xl shadow">
         
         <input

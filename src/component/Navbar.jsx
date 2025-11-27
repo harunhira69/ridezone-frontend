@@ -53,14 +53,14 @@ export default function Navbar() {
             {session && (
               <>
                 <Link
-                  href="addProducts"
+                  href="/add-products"
                   className="text-gray-800 dark:text-gray-300 font-medium hover:text-purple-600 dark:hover:text-purple-400 transition"
                 >
                   Add Product
                 </Link>
 
                 <Link
-                  href="/manageProducts"
+                  href="/manage-products"
                   className="text-gray-800 dark:text-gray-300 font-medium hover:text-purple-600 dark:hover:text-purple-400 transition"
                 >
                   Manage Products
@@ -83,7 +83,7 @@ export default function Navbar() {
                     className="rounded-full border border-gray-300 dark:border-gray-700"
                   />
                   <span className="font-semibold text-gray-800 dark:text-gray-200">
-                    {session.user.name.split(" ")[0]}
+                    {session.user.name?.split(" ")[0]}
                   </span>
                 </button>
 
@@ -156,7 +156,7 @@ export default function Navbar() {
           {session && (
             <>
               <Link
-                href="/add-product"
+                href="/add-products"
                 className="block py-2 font-medium hover:text-purple-600 dark:hover:text-purple-400"
               >
                 Add Product

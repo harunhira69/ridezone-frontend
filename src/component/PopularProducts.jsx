@@ -44,18 +44,14 @@ const PopularProducts = () => {
       <div className="max-w-7xl mx-auto px-6">
 
         {/* Header */}
-     <div className="text-center mb-16">
-  {/* Main Title with gradient */}
-  <h2 className="text-4xl md:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-pink-500 to-indigo-500 tracking-tight leading-tight">
-    Popular Products
-  </h2>
-
-  {/* Subtitle */}
-  <p className="mt-4 text-gray-600 dark:text-gray-300 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-    Our best-selling bikes, cars, bicycles, and watches
-  </p>
-</div>
-
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-extrabold bg-gradient-to-r from-purple-600 via-pink-500 to-indigo-500 bg-clip-text text-transparent">
+            Popular Products
+          </h2>
+          <p className="mt-4 text-gray-600 dark:text-gray-300 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+            Our best-selling bikes, cars, bicycles, and watches
+          </p>
+        </div>
 
         {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
@@ -65,15 +61,16 @@ const PopularProducts = () => {
               className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 p-5 flex flex-col items-center text-center"
             >
               {/* Image */}
-            <div className="relative w-full h-56 mb-4">
-  <Image
-    src={product.img}
-    alt={product.name}
-    fill
-    className="object-cover rounded-2xl shadow-md hover:scale-105 transition-transform duration-300"
-    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
-  />
-</div>
+              <div className="relative w-full h-56 mb-4">
+                <Image
+                  src={product.img}
+                  alt={product.name}
+                  fill
+                  className="object-cover rounded-2xl shadow-md hover:scale-105 transition-transform duration-300"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  priority={product.id === 1} // optional: prioritize first image for performance
+                />
+              </div>
 
               {/* Category Badge */}
               <span className="px-3 py-1 bg-purple-600 text-white rounded-full text-sm font-medium mb-2">
@@ -95,7 +92,7 @@ const PopularProducts = () => {
               </p>
 
               {/* Button */}
-              <button className="mt-4 w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-semibold py-2 rounded-2xl transition-all duration-300">
+              <button className="mt-4 w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-semibold py-2 rounded-2xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400">
                 View Details
               </button>
             </div>
