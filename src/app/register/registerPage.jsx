@@ -15,54 +15,60 @@ export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // Handle Google redirect toast
+  // Redirect if already logged in
   useEffect(() => {
     if (session) {
       if (searchParams.get("google") === "success") {
         toast.success("Logged in with Google successfully!");
-        router.replace("/", { scroll: false });
-      } else {
-        router.push("/");
       }
+      router.replace("/", { scroll: false });
     }
   }, [session, router, searchParams]);
 
-  // Google login
+  // Google sign-in
   const handleGoogleSignIn = async () => {
     await signIn("google", {
       callbackUrl: "/?google=success",
     });
   };
+// Email/password registration
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-  // REGISTER USER (Send data to backend using Axios)
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("Regsitering ")
+  console.log("Form submitted"); // Log form submission
+  console.log("Name:", name);
+  console.log("Email:", email);
+  console.log("Password:", password);
 
-    try {
-      const res = await axios.post("http://localhost:5000/register", {
-        name,
-        email,
-        password,
-      });
+  try {
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_API_URL}/register`,
+      { name, email, password },
+      { headers: { "Content-Type": "application/json" } }
+    );
 
-      toast.success("Registration successful!");
-      router.push("/login");
-
-    } catch (error) {
-      console.log(error);
-
-      if (error.response) {
-        toast.error(error.response.data.message || "Registration failed!");
-      } else {
-        toast.error("Network error!");
-      }
+    console.log("Response from server:", res.data); // Log server response
+    toast.success(res.data.message || "Registration successful!");
+    router.push("/login");
+  } catch (error) {
+    console.error("Registration error:", error);
+    if (error.response) {
+      console.log("Error response data:", error.response.data); // Log error response
+      toast.error(error.response.data.message || "Registration failed!");
+    } else {
+      toast.error("Network error!");
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 pt-20">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 pt-20 px-4">
       <div className="bg-white rounded-2xl shadow-lg max-w-md w-full p-8">
         <h2 className="text-3xl font-bold text-gray-800 text-center mb-6">
           Create Your Account
@@ -84,9 +90,7 @@ export default function RegisterPage() {
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Name */}
           <div>
-            <label className="block text-gray-700 font-medium mb-2">
-              Name
-            </label>
+            <label className="block text-gray-700 font-medium mb-2">Name</label>
             <input
               type="text"
               value={name}
@@ -99,9 +103,7 @@ export default function RegisterPage() {
 
           {/* Email */}
           <div>
-            <label className="block text-gray-700 font-medium mb-2">
-              Email
-            </label>
+            <label className="block text-gray-700 font-medium mb-2">Email</label>
             <input
               type="email"
               value={email}
@@ -114,9 +116,7 @@ export default function RegisterPage() {
 
           {/* Password */}
           <div>
-            <label className="block text-gray-700 font-medium mb-2">
-              Password
-            </label>
+            <label className="block text-gray-700 font-medium mb-2">Password</label>
             <input
               type="password"
               value={password}
@@ -130,12 +130,12 @@ export default function RegisterPage() {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full py-3 rounded-lg text-white font-semibold 
-                       bg-gradient-to-r from-green-500 to-emerald-500 
-                       hover:from-green-600 hover:to-emerald-600 
-                       shadow-lg transition-all"
+            disabled={loading}
+            className={`w-full py-3 rounded-lg text-white font-semibold bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 shadow-lg transition-all ${
+              loading ? "opacity-70 cursor-not-allowed" : ""
+            }`}
           >
-            Register
+            {loading ? "Registering..." : "Register"}
           </button>
         </form>
 

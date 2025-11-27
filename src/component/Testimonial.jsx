@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 
-const testimonial = [
+const testimonials = [
   {
     name: "Rahim Ahmed",
     role: "Bike Enthusiast",
@@ -28,7 +28,7 @@ const testimonial = [
 
 export default function Testimonial() {
   return (
-    <section className="py-20 bg-white">
+    <section className="py-24 bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-6">
 
         {/* Title */}
@@ -36,16 +36,19 @@ export default function Testimonial() {
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-3xl md:text-4xl font-bold text-center mb-4"
+          className="text-3xl md:text-4xl font-extrabold text-center mb-4 tracking-tight text-gray-900 dark:text-white"
         >
-          What Our <span className="text-purple-600">Customers Say</span>
+          What Our{" "}
+          <span className="bg-gradient-to-r from-purple-600 via-pink-500 to-indigo-500 bg-clip-text text-transparent">
+            Customers Say
+          </span>
         </motion.h2>
 
         <motion.p
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
-          className="text-center text-gray-600 max-w-2xl mx-auto mb-12"
+          className="text-center text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-16 text-lg md:text-xl leading-relaxed"
         >
           Real feedback from our trusted users who found their perfect ride through RideZone.
         </motion.p>
@@ -53,33 +56,41 @@ export default function Testimonial() {
         {/* Testimonials Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
 
-          {testimonial.map((t, index) => (
+          {testimonials.map((t, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 50 }}
+              initial={{ opacity: 0, y: 60 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="bg-gray-50 p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all"
+              transition={{ delay: index * 0.15, duration: 0.6 }}
+              className="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer"
             >
-              <div className="flex justify-center">
-                <Image
-                  src={t.image}
-                  width={80}
-                  height={80}
-                  alt={t.name}
-                  className="rounded-full border-4 border-purple-300 shadow-md"
-                />
+              {/* Image with ring effect */}
+              <div className="flex justify-center -mt-12 mb-5 relative">
+                <div className="w-24 h-24 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 p-1 shadow-lg">
+                  <Image
+                    src={t.image}
+                    width={88}
+                    height={88}
+                    alt={t.name}
+                    className="rounded-full border-2 border-white dark:border-gray-900 object-cover"
+                  />
+                </div>
               </div>
 
-              <p className="text-gray-700 text-center italic mt-5">
+              {/* Quote */}
+              <p className="text-gray-700 dark:text-gray-300 text-center italic mb-6 leading-relaxed text-base md:text-lg">
                 “{t.quote}”
               </p>
 
-              <h3 className="text-xl font-semibold text-center mt-4">
+              {/* Name */}
+              <h3 className="text-xl md:text-2xl font-semibold text-gray-900 dark:text-white text-center">
                 {t.name}
               </h3>
 
-              <p className="text-center text-gray-500 text-sm">{t.role}</p>
+              {/* Role */}
+              <p className="text-center text-gray-500 dark:text-gray-400 text-sm md:text-base">
+                {t.role}
+              </p>
             </motion.div>
           ))}
 

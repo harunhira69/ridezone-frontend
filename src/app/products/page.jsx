@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useLoader } from "@/component/loaderProvider";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState([]);
@@ -10,37 +11,48 @@ export default function ProductsPage() {
   const [category, setCategory] = useState("All");
   const [categories, setCategories] = useState([]);
 
+  // ❗ Correct destructuring
+  const { showLoader, hideLoader } = useLoader();
+
   useEffect(() => {
+    showLoader(); // Start loading
+
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`)
       .then((res) => res.json())
       .then((data) => {
         setProducts(data);
 
-        // Unique categories
         const uniqueCategories = [
           "All",
           ...Array.from(
             new Set(data.map((item) => item.category || "Uncategorized"))
           ),
         ];
-        setCategories(uniqueCategories);
-      })
-      .catch((err) => console.error("Failed to fetch products:", err));
-  }, []);
 
-  // Filter products based on search & category
+        setCategories(uniqueCategories);
+
+        hideLoader(); // Stop loading
+      })
+      .catch((err) => {
+        console.error("Failed to fetch products:", err);
+        hideLoader();
+      });
+  }, [showLoader,hideLoader]);
+
+  // Filter logic
   const filteredProducts = products.filter((p) => {
-    const title = p.title || "";
-    const cat = p.category || "";
-    const matchesSearch = title.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = category === "All" || cat === category;
+    const matchesSearch = (p.title || "")
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
+    const matchesCategory =
+      category === "All" || p.category === category;
+
     return matchesSearch && matchesCategory;
   });
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">
-
-      {/* Page Title */}
       <h2 className="text-4xl font-bold text-center mt-10">All Products</h2>
       <p className="text-center text-gray-600 mt-2 mb-8">
         Browse our exclusive collection and find the perfect product for you.
@@ -48,7 +60,6 @@ export default function ProductsPage() {
 
       {/* Filters */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-10">
-        {/* Search */}
         <input
           type="text"
           placeholder="Search products..."
@@ -57,7 +68,6 @@ export default function ProductsPage() {
           className="w-full md:w-1/3 px-4 py-2 border rounded-lg shadow-sm"
         />
 
-        {/* Category Filter */}
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
@@ -71,15 +81,12 @@ export default function ProductsPage() {
         </select>
       </div>
 
-      {/* Product Grid */}
+      {/* Product Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         {filteredProducts.map((product) => {
-          // Fallback image
-          const imgSrc =
-            product.image?.startsWith("http") ||
-            product.image?.startsWith("https")
-              ? product.image
-              : "/placeholder.png";
+          const imgSrc = product.image?.startsWith("http")
+            ? product.image
+            : "/placeholder.png";
 
           return (
             <div
@@ -88,14 +95,14 @@ export default function ProductsPage() {
             >
               <Image
                 src={imgSrc}
-                alt={product.title || "Product image"}
+                alt={product.name || "Product image"}
                 width={400}
                 height={300}
                 className="rounded-lg h-48 w-full object-cover mb-3"
               />
 
               <h3 className="text-xl font-bold mt-2">
-                {product.title || "No Title"}
+                {product.title || "No Name"}
               </h3>
 
               <p className="text-gray-600 text-sm line-clamp-2 mt-1">
@@ -118,7 +125,6 @@ export default function ProductsPage() {
         })}
       </div>
 
-      {/* No Products Found */}
       {filteredProducts.length === 0 && (
         <p className="text-center text-gray-600 mt-10">
           No products found.

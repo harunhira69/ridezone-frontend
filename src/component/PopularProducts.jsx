@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { Star } from "lucide-react";
+import Image from "next/image";
 
 const PopularProducts = () => {
   const products = [
@@ -43,14 +44,18 @@ const PopularProducts = () => {
       <div className="max-w-7xl mx-auto px-6">
 
         {/* Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white">
-            Popular Products
-          </h2>
-          <p className="text-gray-600 dark:text-gray-300 mt-2 text-lg md:text-xl">
-            Our best-selling bikes, cars, bicycles, and watches
-          </p>
-        </div>
+     <div className="text-center mb-16">
+  {/* Main Title with gradient */}
+  <h2 className="text-4xl md:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-pink-500 to-indigo-500 tracking-tight leading-tight">
+    Popular Products
+  </h2>
+
+  {/* Subtitle */}
+  <p className="mt-4 text-gray-600 dark:text-gray-300 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+    Our best-selling bikes, cars, bicycles, and watches
+  </p>
+</div>
+
 
         {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
@@ -60,13 +65,15 @@ const PopularProducts = () => {
               className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 p-5 flex flex-col items-center text-center"
             >
               {/* Image */}
-              <div className="relative w-full h-56 mb-4">
-                <img
-                  src={product.img}
-                  alt={product.name}
-                  className="w-full h-full object-cover rounded-2xl shadow-md hover:scale-105 transition-transform duration-300"
-                />
-              </div>
+            <div className="relative w-full h-56 mb-4">
+  <Image
+    src={product.img}
+    alt={product.name}
+    fill
+    className="object-cover rounded-2xl shadow-md hover:scale-105 transition-transform duration-300"
+    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+  />
+</div>
 
               {/* Category Badge */}
               <span className="px-3 py-1 bg-purple-600 text-white rounded-full text-sm font-medium mb-2">

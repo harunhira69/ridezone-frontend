@@ -3,19 +3,22 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
+import { useLoader } from "@/component/LoaderProvider";
 
 export default function AddProduct() {
   const { data: session } = useSession();
+  const { showLoader, hideLoader } = useLoader();
+
   const [formData, setFormData] = useState({
-    name: "",
+    title: "",
     brand: "",
     model: "",
     price: "",
     image: "",
-   shortDescription: "",
+    shortDescription: "",
+    category: "", // 🔥 added
   });
 
-  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
@@ -27,49 +30,46 @@ export default function AddProduct() {
 
     if (!session) return setMessage("You must be logged in to add a product");
 
-    setLoading(true);
+    showLoader();
     setMessage("");
 
     try {
-      const { data } = await axios.post("http://localhost:5000/products", {
-        ...formData,
-        userId: session.user.id,
-      });
+      const { data } = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/products`,
+        {
+          ...formData,
+          userId: session.user.id,
+        }
+      );
 
       setMessage(data.message || "Product added successfully!");
 
-      // Reset form
       setFormData({
-        name: "",
+        title: "",
         brand: "",
         model: "",
         price: "",
         image: "",
         shortDescription: "",
+        category: "",
       });
-
     } catch (err) {
       console.error(err);
       setMessage(err.response?.data?.message || "Server error. Try again later.");
     }
 
-    setLoading(false);
+    hideLoader();
   };
 
   return (
-    <div className="py-10 px-4 max-w-xl  mx-auto">
-      <h1 className="text-3xl font-bold text-center mt-10 mb-8">Add New Product</h1>
-
-      {message && (
-        <p className="text-center mb-4 text-red-500">{message}</p>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+    <div className="py-10 px-4 max-w-xl mx-auto">
+      <form onSubmit={handleSubmit} className="space-y-4 p-6 rounded-xl shadow">
+        
         <input
-          name="name"
-          value={formData.name}
+          name="title"
+          value={formData.title}
           onChange={handleChange}
-          placeholder="Product Name"
+          placeholder="Product Title"
           className="w-full p-3 border rounded"
           required
         />
@@ -106,7 +106,22 @@ export default function AddProduct() {
           onChange={handleChange}
           placeholder="Price"
           className="w-full p-3 border rounded"
+          required
         />
+
+        {/* 🔥 Category Section Added */}
+        <select
+          name="category"
+          value={formData.category}
+          onChange={handleChange}
+          className="w-full p-3 border rounded"
+          required
+        >
+          <option value="">Select Category</option>
+          <option value="bike">Bike</option>
+          <option value="car">Car</option>
+          <option value="bicycle">Bicycle</option>
+        </select>
 
         <textarea
           name="shortDescription"
@@ -119,10 +134,9 @@ export default function AddProduct() {
 
         <button
           type="submit"
-          disabled={loading}
-          className="w-full py-3 bg-purple-600 text-white rounded hover:bg-purple-700 transition"
+          className="w-full py-3 bg-purple-600 text-white rounded hover:bg-purple-700"
         >
-          {loading ? "Adding..." : "Add Product"}
+          Add Product
         </button>
       </form>
     </div>

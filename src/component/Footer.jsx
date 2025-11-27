@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FaFacebook, FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa";
 
 export default function Footer() {
@@ -19,10 +20,10 @@ export default function Footer() {
         <div>
           <h3 className="text-lg font-semibold text-white mb-4">Quick Links</h3>
           <ul className="space-y-3 text-sm text-zinc-400">
-            <li><a href="/" className="hover:text-white">Home</a></li>
-            <li><a href="/products" className="hover:text-white">Products</a></li>
-            <li><a href="/about" className="hover:text-white">About Us</a></li>
-            <li><a href="/contact" className="hover:text-white">Contact</a></li>
+            <li><Link href="/" className="hover:text-white">Home</Link></li>
+            <li><Link href="/products" className="hover:text-white">Products</Link></li>
+            <li><Link href="/about" className="hover:text-white">About Us</Link></li>
+            <li><Link href="/contact-us" className="hover:text-white">Contact</Link></li>
           </ul>
         </div>
 
@@ -30,21 +31,21 @@ export default function Footer() {
         <div>
           <h3 className="text-lg font-semibold text-white mb-4">Support</h3>
           <ul className="space-y-3 text-sm text-zinc-400">
-            <li><a href="/faq" className="hover:text-white">FAQ</a></li>
-            <li><a href="/privacy" className="hover:text-white">Privacy Policy</a></li>
-            <li><a href="/terms" className="hover:text-white">Terms & Conditions</a></li>
-            <li><a href="/shipping" className="hover:text-white">Shipping Info</a></li>
+            <li><Link href="/faq" className="hover:text-white">FAQ</Link></li>
+            <li><Link href="/privacy" className="hover:text-white">Privacy Policy</Link></li>
+            <li><Link href="/terms" className="hover:text-white">Terms & Conditions</Link></li>
+            <li><Link href="/shipping" className="hover:text-white">Shipping Info</Link></li>
           </ul>
         </div>
 
-        {/* SOCIAL LINKS */}
+        {/* SOCIAL LINKS (External) */}
         <div>
           <h3 className="text-lg font-semibold text-white mb-4">Follow Us</h3>
           <div className="flex items-center space-x-5 text-2xl">
-            <a href="#" className="hover:text-white"><FaFacebook /></a>
-            <a href="#" className="hover:text-white"><FaInstagram /></a>
-            <a href="#" className="hover:text-white"><FaTwitter /></a>
-            <a href="#" className="hover:text-white"><FaYoutube /></a>
+            <a href="https://www.facebook.com/ridezone" target="_blank" rel="noopener noreferrer" className="hover:text-white"><FaFacebook /></a>
+            <a href="https://www.instagram.com/ridezone" target="_blank" rel="noopener noreferrer" className="hover:text-white"><FaInstagram /></a>
+            <a href="https://www.twitter.com/ridezone" target="_blank" rel="noopener noreferrer" className="hover:text-white"><FaTwitter /></a>
+            <a href="https://www.youtube.com/ridezone" target="_blank" rel="noopener noreferrer" className="hover:text-white"><FaYoutube /></a>
           </div>
         </div>
 
