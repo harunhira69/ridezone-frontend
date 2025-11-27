@@ -162,7 +162,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-lg text-white font-semibold bg-gradient-to-r from-green-500 to-emerald-500"
+            className="w-full py-3 rounded-lg text-white font-semibold bg-linear-to-r from-green-500 to-emerald-500"
           >
             {loading ? "Registering..." : "Register"}
           </button>

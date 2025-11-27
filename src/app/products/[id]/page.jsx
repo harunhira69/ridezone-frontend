@@ -26,9 +26,10 @@ export default async function ProductDetails(props) {
     <div className="max-w-6xl mx-auto px-4 py-12">
       {/* Back Button */}
       <Link href="/products">
-        <button className="mb-10 bg-gray-100 hover:bg-gray-200 text-gray-800 px-5 py-2 rounded-xl shadow-sm">
-          ← Back to Products
-        </button>
+      <button className="mb-10 mt-10 px-5 py-2 rounded-xl shadow-sm text-white font-semibold 
+    bg-linear-to-r from-purple-600 to-pink-500 hover:from-pink-500 hover:to-purple-600 transition">
+  ← Back to Products
+</button>
       </Link>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
