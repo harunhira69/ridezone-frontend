@@ -5,11 +5,13 @@ import Image from "next/image";
 import { useState } from "react";
 import { FiMenu, FiX, FiLogOut } from "react-icons/fi";
 import { useSession, signOut } from "next-auth/react";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
   const { data: session } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const pathname = usePathname();
 
   const routes = [
     { name: "Home", path: "/" },
@@ -18,11 +20,12 @@ export default function Navbar() {
     { name: "Contact", path: "/contact" },
   ];
 
+  const isActive = (path) => pathname === path;
+
   return (
     <nav className="fixed w-full backdrop-blur-lg bg-white/60 dark:bg-black/60 shadow-md z-50 border-b border-white/20 dark:border-gray-800 transition">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
             <Image
@@ -32,7 +35,7 @@ export default function Navbar() {
               height={40}
               className="rounded-full"
             />
-            <span className="font-bold text-xl bg-gradient-to-r from-purple-600 to-pink-500 text-transparent bg-clip-text">
+            <span className="font-bold text-xl bg-linear-to-r from-purple-600 to-pink-500 text-transparent bg-clip-text">
               RideZone
             </span>
           </Link>
@@ -43,24 +46,34 @@ export default function Navbar() {
               <Link
                 key={route.name}
                 href={route.path}
-                className="text-gray-800 dark:text-gray-300 font-medium hover:text-purple-600 dark:hover:text-purple-400 transition"
+                className={`
+                  relative font-medium transition
+                  ${isActive(route.path)
+                    ? "text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500"
+                    : "text-gray-800 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400"
+                  }
+                `}
               >
                 {route.name}
+
+                {/* Gradient Underline */}
+                {isActive(route.path) && (
+                  <span className="absolute left-0 -bottom-1 w-full h-[3px] bg-gradient-to-r from-purple-600 to-pink-500 rounded-full"></span>
+                )}
               </Link>
             ))}
 
-            {/* Admin/Logged-in Links */}
+            {/* Admin Links */}
             {session && (
               <>
                 <Link
-                  href="/addProducts"
+                  href="/add-products"
                   className="text-gray-800 dark:text-gray-300 font-medium hover:text-purple-600 dark:hover:text-purple-400 transition"
                 >
                   Add Product
                 </Link>
-
                 <Link
-                  href="/manageProducts"
+                  href="/manage-products"
                   className="text-gray-800 dark:text-gray-300 font-medium hover:text-purple-600 dark:hover:text-purple-400 transition"
                 >
                   Manage Products
@@ -68,7 +81,7 @@ export default function Navbar() {
               </>
             )}
 
-            {/* Auth / User Avatar */}
+            {/* Auth / Avatar */}
             {session ? (
               <div className="relative">
                 <button
@@ -118,7 +131,6 @@ export default function Navbar() {
                 >
                   Login
                 </Link>
-
                 <Link
                   href="/register"
                   className="px-5 py-2 rounded-lg font-semibold bg-pink-600 text-white hover:bg-pink-700 shadow"
@@ -142,12 +154,17 @@ export default function Navbar() {
       {/* Mobile Menu */}
       {menuOpen && (
         <div className="md:hidden px-4 pb-4 bg-white dark:bg-black text-gray-900 dark:text-gray-100 space-y-2 border-t dark:border-gray-800">
-
           {routes.map((route) => (
             <Link
               key={route.name}
               href={route.path}
-              className="block py-2 font-medium hover:text-purple-600 dark:hover:text-purple-400"
+              className={`
+                block py-2 font-medium transition
+                ${isActive(route.path)
+                  ? "text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500"
+                  : "hover:text-purple-600 dark:hover:text-purple-400"
+                }
+              `}
             >
               {route.name}
             </Link>
@@ -179,7 +196,6 @@ export default function Navbar() {
               >
                 Login
               </Link>
-
               <Link
                 href="/register"
                 className="block text-center py-2 bg-pink-600 text-white rounded-lg font-semibold"
